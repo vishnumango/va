@@ -271,6 +271,9 @@ body{
   font-style:normal;color:var(--red);font-weight:700;
 }
 
+/* ── MUTE BTN ── */
+#muteBtn:hover{background:#fff8d0;}
+
 /* ── RSVP ── */
 #rsvp{background:#fffdf5;text-align:center;}
 .rsvp-form{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:1.2rem;}
@@ -377,7 +380,14 @@ footer{
   <div class="lamps-bar" id="lampsBar"></div>
 
   <!-- Audio -->
-  <audio id="bgMusic" loop><source src="wedding-song.mp3" type="audio/mpeg"/></audio>
+  <audio id="bgMusic" loop preload="auto"><source src="wedding-song.mp3" type="audio/mpeg"/></audio>
+
+  <!-- Mute/Unmute button -->
+  <button id="muteBtn" onclick="toggleMute()" style="display:none;position:fixed;bottom:1.5rem;right:1.5rem;z-index:100;
+    background:rgba(255,255,255,.92);border:1.5px solid #e8c840;border-radius:50px;
+    padding:.55rem 1.1rem;font-family:'Libre Baskerville',serif;font-size:.85rem;
+    color:#8b6400;cursor:pointer;box-shadow:0 4px 16px rgba(200,150,12,.2);
+    align-items:center;gap:.4rem;">🔇</button>
 
   <!-- HERO -->
   <section id="hero">
@@ -585,7 +595,18 @@ function enterMain(){
     // Lotus ornament inline SVG
     document.getElementById('lotusOrn').innerHTML='🌸';
     const m=document.getElementById('bgMusic');
-    m.volume=.3;m.play().catch(()=>{});
+    m.volume=.3;
+    m.play().then(()=>{
+      document.getElementById('muteBtn').style.display='flex';
+    }).catch(()=>{
+      // If still blocked, show a play button
+      document.getElementById('muteBtn').style.display='flex';
+      document.getElementById('muteBtn').textContent='▶ Music';
+      document.getElementById('muteBtn').onclick=()=>{
+        m.play();document.getElementById('muteBtn').textContent='🔇';
+        document.getElementById('muteBtn').onclick=toggleMute;
+      };
+    });
     window.addEventListener('scroll',()=>{
       const h=document.querySelector('.hero-names');
       if(h)h.style.transform=`translateY(${scrollY*.12}px)`;
@@ -833,6 +854,14 @@ function addCal(e){
   const t=encodeURIComponent('Wedding of Vishnu & Archana');
   const l=encodeURIComponent('https://maps.app.goo.gl/K6cnJ3uHfStnAheZ8');
   window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${t}&dates=20260828T093000/20260828T150000&location=${l}`,'_blank');
+}
+
+/* ── MUTE TOGGLE ── */
+function toggleMute(){
+  const m=document.getElementById('bgMusic');
+  const btn=document.getElementById('muteBtn');
+  if(m.paused){m.play();btn.textContent='🔇';}
+  else{m.pause();btn.textContent='▶ Music';}
 }
 
 /* ── RSVP ── */
